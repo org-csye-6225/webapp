@@ -1,5 +1,5 @@
 const User = require('../models/User');
-
+const { commonHeaders } = require('../middleware/routes');
 
 User.prototype.toJSON = function() {
   const user = {...this.get()};
@@ -14,7 +14,9 @@ const userService = {
 
       const existingUser = await User.findOne({where: {email}});
       if (existingUser) {
-        return res.status(400).send('User with this email already exists');
+        return res.status(400)
+        .header(commonHeaders)
+        .send('User with this email already exists');
       }
 
       const newUser = await User.create({
@@ -24,9 +26,13 @@ const userService = {
         lastName,
       });
 
-      return res.status(201).json(newUser);
+      return res.status(201)
+      .header(commonHeaders)
+      .json(newUser);
     } catch (error) {
-      return res.status(500).send(error.message);
+      return res.status(500)
+      .header(commonHeaders)
+      .send(error.message);
     }
   },
 
@@ -40,7 +46,9 @@ const userService = {
               .includes(field));
 
       if (disallowedFields.length > 0) {
-        return res.status(400).send('Cannot update Data');
+        return res.status(400)
+        .header(commonHeaders)
+        .send('Cannot update Data');
       }
 
       const allowedUserData = {};
@@ -57,9 +65,13 @@ const userService = {
       allowedUserData.account_updated = new Date();
 
       await User.update(allowedUserData, {where: {email: userEmail}});
-      return res.status(200).send('User information updated successfully');
+      return res.status(200)
+      .header(commonHeaders)
+      .send('User information updated successfully');
     } catch (error) {
-      return res.status(500).send(error.message);
+      return res.status(500)
+      .header(commonHeaders)
+      .send(error.message);
     }
   },
 
@@ -69,12 +81,18 @@ const userService = {
       const user = await User.findOne({where: {email: userEmail}});
 
       if (!user) {
-        return res.status(404).send('User not found');
+        return res.status(404)
+        .header(commonHeaders)
+        .send('User not found');
       }
 
-      return res.status(200).json(user);
+      return res.status(200)
+      .header(commonHeaders)
+      .json(user);
     } catch (error) {
-      return res.status(500).send(error.message);
+      return res.status(500)
+      .header(commonHeaders)
+      .send(error.message);
     }
   },
 };
