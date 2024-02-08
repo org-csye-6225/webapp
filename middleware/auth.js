@@ -13,7 +13,7 @@ const authenticateBasic = (req, res, next) => {
   }
 
   req.authenticatedUser = {
-    email: user.names,
+    email: user.name,
   };
 
   next();
