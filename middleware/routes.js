@@ -30,4 +30,4 @@ const checkDBConnection = async (req, res, next) => {
   }
 };
 
-module.exports = { commonHeaders, rejectPayload, checkDBConnection };
+module.exports = {commonHeaders, rejectPayload, checkDBConnection};
