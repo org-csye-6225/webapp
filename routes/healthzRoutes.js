@@ -1,9 +1,8 @@
-const express = require('express');
-const db = require('../init/index');
+const express = require('express');;
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-const { commonHeaders, rejectPayload, checkDBConnection } = require('../middleware/routes');
+const {commonHeaders, rejectPayload, checkDBConnection} = require('../middleware/routes');
 
 router.get('/', rejectPayload, checkDBConnection, (req, res) => {
   res.status(200).header(commonHeaders).send();
