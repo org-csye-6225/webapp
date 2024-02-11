@@ -1,5 +1,5 @@
 name: Node.js CI
-
+exit 1
 on:
   pull_request:
     branches:
