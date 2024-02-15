@@ -13,9 +13,6 @@ jobs:
     services:
       mysql:
         image: mysql:latest
-        env:
-          MYSQL_DATABASE: "healthDB"
-          MYSQL_ROOT_PASSWORD: "password3456"
 
         ports:
           - 3306:3306

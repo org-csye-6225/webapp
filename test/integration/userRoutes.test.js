@@ -20,20 +20,20 @@ describe('User Routes Integration Tests', () => {
   describe('Test 1: Create User and validate with GET', () => {
     test('should create a new user and validate data with GET', async () => {
       const userData = {
-        email: 'test@test.com',
-        password: '123@abcd',
+        email: 'danny@gmail.com',
+        password: '1234@Data',
         firstName: 'daniel',
         lastName: 'radclif'
       };
 
-      const response = await request(app)
+      await request(app)
         .post('/v1/user')
         .send(userData)
         .expect(201);
 
       const getUserResponse = await request(app) 
         .get('/v1/user/self')
-        .auth('test@test.com', '123@abcd')
+        .auth('danny@gmail.com', '1234@Data')
         .expect(200);
 
       expect(getUserResponse.body.email).toBe(userData.email);
@@ -42,10 +42,13 @@ describe('User Routes Integration Tests', () => {
     });
   });
 
-  describe.skip('Test 2: Update User and validate data with GET', () => {
+  describe('Test 2: Update User and validate data with GET', () => {
     test('should update user and validate data with GET', async () => {
       const userData = {
-        email: 'test@test.com',
+        email: 'danny@gmail.com',
+        password: '1234@Data',
+        firstName: 'daniel',
+        lastName: 'radclif'
       };
 
       await request(app)
@@ -60,13 +63,13 @@ describe('User Routes Integration Tests', () => {
 
       await request(app)
         .put('/v1/user/self')
-        .auth('test@test.com', '123@abcd')
+        .auth('danny@gmail.com', '1234@Data')
         .send(updatedUserData)
         .expect(200);
 
       const getUserResponse = await request(app)
         .get('/v1/user/self')
-        .auth('test@test.com', '123@abcd') 
+        .auth('danny@gmail.com', '1234@Data')
         .expect(200);
 
       expect(getUserResponse.body.firstName).toBe(updatedUserData.firstName);
