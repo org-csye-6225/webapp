@@ -49,7 +49,7 @@ describe('User Routes Integration Tests', () => {
         password: '1234@Data',
         firstName: 'daniel',
         lastName: 'radclif'
-      };
+      }
 
       await request(app)
         .post('/v1/user')
