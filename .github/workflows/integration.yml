@@ -1,0 +1,51 @@
+name: Integration Tests
+ 
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - main
+ 
+jobs:
+  integration-tests:
+    runs-on: ubuntu-latest
+ 
+    services:
+      
+      mysql:
+        image: mysql:latest
+        ports:
+          - 3306:3306
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: testdb
+ 
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v3
+ 
+    - name: Set up Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: 20
+ 
+    - name: Install dependencies
+      run: npm install
+ 
+    - name: Start MySQL
+      run: sudo service mysql start
+ 
+    - name: Create testdb database
+      run: |
+        echo "CREATE DATABASE IF NOT EXISTS testdb;" | mysql -h localhost -u root -proot
+ 
+    - name: Run integration tests
+      env:
+        USER : ${{ secrets.USER }}
+        PASSWORD: ${{ secrets.PASSWORD }}
+        DATABASE : ${{ secrets.DATABASE }}
+        HOST : ${{ secrets.HOST }}
+        DIALECT : ${{ secrets.DIALECT }}
+        AUTH_USER: ${{ secrets.AUTH_USER }}
+        AUTH_PSWD:  ${{ secrets.AUTH_PSWD }}
+      run: npm run test:integration  

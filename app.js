@@ -21,11 +21,14 @@ db.initDatabase()
 
 app.use(bodyParser.json());
 
-const PORT = process.env.PORT || 3000;
-
-app.listen(PORT, () => {
-  console.log(`Server is running on port: ${PORT}`);
-});
-
 app.use('/healthz', healthzRoutes);
 app.use('/v1/user', userRoutes);
+
+module.exports = app;
+
+if (!module.parent) {
+  const PORT = process.env.PORT || 3000;
+  app.listen(PORT, () => {
+    console.log(`Server is running on port ${PORT}`);
+  });
+}
