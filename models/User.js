@@ -7,8 +7,6 @@ const User = db.sequelize.define('user', {
   password: {type: Sequelize.STRING, allowNull: false},
   firstName: {type: Sequelize.STRING, allowNull: false},
   lastName: {type: Sequelize.STRING, allowNull: false},
-  account_created: {type: Sequelize.DATE, defaultValue: Sequelize.NOW},
-  account_updated: {type: Sequelize.DATE, allowNull: true},
 });
 
 // encrypt the password, before user is created
