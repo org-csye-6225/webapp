@@ -14,16 +14,12 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          USER : ${{ secrets.USER }}
-          PASSWORD: ${{ secrets.PASSWORD }}
-          DATABASE : ${{ secrets.DATABASE }}
-          HOST : ${{ secrets.HOST }}
-          DIALECT : mysql
-          AUTH_USER: ${{ secrets.AUTH_USER }}
-          AUTH_PSWD:  ${{ secrets.AUTH_PSWD }}
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_DATABASE: healthDB
 
         ports:
-          - 3306:3306
+          - 8888:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -43,7 +39,7 @@ jobs:
           sudo systemctl start mysql
           sudo systemctl enable mysql
           sudo systemctl status mysql
-
+          
       - name: Wait for MySQL to start
         run: |
           echo "Waiting for MySQL to start"
@@ -51,12 +47,17 @@ jobs:
             sleep 1
           done
           echo "MySQL is up and running!"
-
       - name: Create DB
-        run: |
-          mysql -u root -p"${PASSWORD}" -h 127.0.0.1 --port 3306 -e "CREATE DATABASE IF NOT EXISTS healthDB;"
-          mysql -u root -p"${PASSWORD}" -h 127.0.0.1 --port 3306 -e "USE healthDB;"
-          mysql -h 127.0.0.1 -u root -p"${PASSWORD}" -e "GRANT ALL PRIVILEGES ON *.* TO '${USER}'@'%';"
+        run: mysql -h 127.0.0.1 --port 8888 -u ${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
 
       - name: Run tests
+        env:
+            USER : ${{ secrets.USER }}
+            PASSWORD: ${{ secrets.PASSWORD }}
+            DATABASE : ${{ secrets.DATABASE }}
+            HOST : ${{ secrets.HOST }}
+            DIALECT : mysql
+            AUTH_USER: ${{ secrets.AUTH_USER }}
+            AUTH_PSWD:  ${{ secrets.AUTH_PSWD }}
+
         run: npm run test:integration  
