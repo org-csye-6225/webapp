@@ -4,6 +4,7 @@ const db = require('../../init/index');
 const User = require('../../models/User');
 const auth = require('../../config/AuthConfig');
 
+
 describe('User Routes Integration Tests', () => {
   beforeAll(async () => {
     await db.initDatabase();
@@ -51,7 +52,7 @@ describe('User Routes Integration Tests', () => {
         firstName: 'daniel',
         lastName: 'radclif'
       };
-
+      
       await request(app)
         .post('/v1/user')
         .send(userData)

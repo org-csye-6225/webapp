@@ -39,7 +39,7 @@ jobs:
           sudo systemctl start mysql
           sudo systemctl enable mysql
           sudo systemctl status mysql
-          
+
       - name: Wait for MySQL to start
         run: |
           echo "Waiting for MySQL to start"
@@ -47,8 +47,10 @@ jobs:
             sleep 1
           done
           echo "MySQL is up and running!"
+
       - name: Create DB
         run: mysql -h 127.0.0.1 --port 8888 -u ${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
+
 
       - name: Run tests
         env:
