@@ -14,12 +14,10 @@ jobs:
       mysql:
         image: mysql:latest
         env:
-          DB_USER: root
-          DB_PASSWORD: root
-          DB_DATABASE: healthDB
+          MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
 
         ports:
-          - 8888:3306
+          - 3306/tcp
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -49,17 +47,19 @@ jobs:
           echo "MySQL is up and running!"
 
       - name: Create DB
-        run: mysql -h 127.0.0.1 --port 8888 -u ${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
+        run: mysql -h 127.0.0.1 --port 3306 -u root -proot -e 'CREATE DATABASE IF NOT EXISTS healthDB;'
+
+      - name: Use Created Database
+        run: mysql -h 127.0.0.1 --port 3306 -u root -proot -e 'USE healthDB;'
 
 
       - name: Run tests
         env:
-            USER : ${{ secrets.USER }}
-            PASSWORD: ${{ secrets.PASSWORD }}
-            DATABASE : ${{ secrets.DATABASE }}
-            HOST : ${{ secrets.HOST }}
-            DIALECT : mysql
-            AUTH_USER: ${{ secrets.AUTH_USER }}
-            AUTH_PSWD:  ${{ secrets.AUTH_PSWD }}
-
+          PASSWORD: "${{ secrets.SQL_PSWD }}"
+          AUTH_USER: "${{ secrets.AUTH_USER }}"
+          AUTH_PSWD: "${{ secrets.AUTH_PSWD }}"
+          DATABASE: "healthDB"
+          DIALECT: "mysql"
+          USER : "root"
+          HOST: 127.0.0.1
         run: npm run test:integration  
