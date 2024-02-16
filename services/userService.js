@@ -12,6 +12,12 @@ const userService = {
     try {
       const {email, password, firstName, lastName} = req.body;
 
+      if (!email || !password || !firstName || !lastName) {
+        return res.status(400)
+            .header(commonHeaders)
+            .send('All fields are required');
+      }
+
       const existingUser = await User.findOne({where: {email}});
       if (existingUser) {
         return res.status(400)
@@ -50,6 +56,17 @@ const userService = {
             .header(commonHeaders)
             .send('Cannot update Data');
       }
+
+      if (
+        ('firstName' in updatedUserData && updatedUserData.firstName.trim() === '') ||
+        ('lastName' in updatedUserData && updatedUserData.lastName.trim() === '') ||
+        ('password' in updatedUserData && updatedUserData.password.trim() === '')
+      ) {
+          return res.status(400)
+              .header(commonHeaders)
+              .send('firstName, lastName, or password cannot be empty');
+      }
+
 
       const allowedUserData = {};
       if (updatedUserData.firstName) {
