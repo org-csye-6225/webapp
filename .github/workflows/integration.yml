@@ -13,9 +13,13 @@ jobs:
     services:
       mysql:
         image: mysql:latest
+        env:
+          DB_USER: root
+          DB_PASSWORD: root
+          DB_DATABASE: healthDB
 
         ports:
-          - 3306:3306
+          - 8888:3306
         options: --health-cmd="mysqladmin ping" --health-interval=10s --health-timeout=5s --health-retries=3
 
     steps:
@@ -45,9 +49,8 @@ jobs:
           echo "MySQL is up and running!"
 
       - name: Create DB
-        run: |
-          mysql -u root -proot -h 127.0.0.1 --port 3306 -e "CREATE DATABASE IF NOT EXISTS healthDB;"
-          mysql -u root -proot -h 127.0.0.1 --port 3306 -e "USE healthDB;"
+        run: mysql -h 127.0.0.1 --port 8888 -u ${{ env.DB_USER }} -p${{ env.DB_PASSWORD }} -e 'CREATE DATABASE IF NOT EXISTS ${{ env.DB_DATABASE }};'
+
 
       - name: Run tests
         env:
