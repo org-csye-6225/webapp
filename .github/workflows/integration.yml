@@ -13,6 +13,14 @@ jobs:
     services:
       mysql:
         image: mysql:latest
+        env:
+          USER : ${{ secrets.USER }}
+          PASSWORD: ${{ secrets.PASSWORD }}
+          DATABASE : ${{ secrets.DATABASE }}
+          HOST : ${{ secrets.HOST }}
+          DIALECT : mysql
+          AUTH_USER: ${{ secrets.AUTH_USER }}
+          AUTH_PSWD:  ${{ secrets.AUTH_PSWD }}
 
         ports:
           - 3306:3306
@@ -46,17 +54,9 @@ jobs:
 
       - name: Create DB
         run: |
-          mysql -u root -proot -h 127.0.0.1 --port 3306 -e "CREATE DATABASE IF NOT EXISTS healthDB;"
-          mysql -u root -proot -h 127.0.0.1 --port 3306 -e "USE healthDB;"
+          mysql -u root -p"${PASSWORD}" -h 127.0.0.1 --port 3306 -e "CREATE DATABASE IF NOT EXISTS healthDB;"
+          mysql -u root -p"${PASSWORD}" -h 127.0.0.1 --port 3306 -e "USE healthDB;"
+          mysql -h 127.0.0.1 -u root -p"${PASSWORD}" -e "GRANT ALL PRIVILEGES ON *.* TO '${USER}'@'%';"
 
       - name: Run tests
-        env:
-            USER : ${{ secrets.USER }}
-            PASSWORD: ${{ secrets.PASSWORD }}
-            DATABASE : ${{ secrets.DATABASE }}
-            HOST : ${{ secrets.HOST }}
-            DIALECT : mysql
-            AUTH_USER: ${{ secrets.AUTH_USER }}
-            AUTH_PSWD:  ${{ secrets.AUTH_PSWD }}
-
         run: npm run test:integration  

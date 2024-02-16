@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../../app');
 const db = require('../../init/index');
 const User = require('../../models/User');
+const auth = require('../../config/AuthConfig');
 
 describe('User Routes Integration Tests', () => {
   beforeAll(async () => {
@@ -20,8 +21,8 @@ describe('User Routes Integration Tests', () => {
   describe('Test 1: Create User and validate with GET', () => {
     test('should create a new user and validate data with GET', async () => {
       const userData = {
-        email: 'danny@gmail.com',
-        password: '1234@Data',
+        email: auth.AUTH_USER,
+        password: auth.AUTH_PSWD,
         firstName: 'daniel',
         lastName: 'radclif'
       };
@@ -33,7 +34,7 @@ describe('User Routes Integration Tests', () => {
 
       const getUserResponse = await request(app) 
         .get('/v1/user/self')
-        .auth('danny@gmail.com', '1234@Data')
+        .auth(auth.AUTH_USER, auth.AUTH_PSWD)
         .expect(200);
 
       expect(getUserResponse.body.email).toBe(userData.email);
@@ -45,8 +46,8 @@ describe('User Routes Integration Tests', () => {
   describe('Test 2: Update User and validate data with GET', () => {
     test('should update user and validate data with GET', async () => {
       const userData = {
-        email: 'danny@gmail.com',
-        password: '1234@Data',
+        email: auth.AUTH_USER,
+        password: auth.AUTH_PSWD,
         firstName: 'daniel',
         lastName: 'radclif'
       };
@@ -63,13 +64,13 @@ describe('User Routes Integration Tests', () => {
 
       await request(app)
         .put('/v1/user/self')
-        .auth('danny@gmail.com', '1234@Data')
+        .auth(auth.AUTH_USER, auth.AUTH_PSWD)
         .send(updatedUserData)
         .expect(200);
 
       const getUserResponse = await request(app)
         .get('/v1/user/self')
-        .auth('danny@gmail.com', '1234@Data')
+        .auth(auth.AUTH_USER, auth.AUTH_PSWD)
         .expect(200);
 
       expect(getUserResponse.body.firstName).toBe(updatedUserData.firstName);
