@@ -1,9 +1,10 @@
 name: Build Custom Image
 
 on:
-  pull_request:
+  workflow_dispatch:
+  push:
     branches:
-      - main
+        - main
 
 jobs:
   build-and-upload:
@@ -43,33 +44,5 @@ jobs:
     - name: 'Use gcloud CLI'
       run: 'gcloud info'
 
-    - name: Create variables.pkr.hcl
-      run: |
-        echo 'variable "MYSQL_ROOT_PASSWORD" {}' > variables.pkr.hcl
-        echo 'variable "SQL_USER" {}' >> variables.pkr.hcl
-        echo 'variable "SQL_PSWD" {}' >> variables.pkr.hcl
-        echo 'variable "AUTH_USER" {}' >> variables.pkr.hcl
-        echo 'variable "AUTH_PSWD" {}' >> variables.pkr.hcl
-
-    - name: Set Variables from Secrets
-      run: |
-        echo "MYSQL_ROOT_PASSWORD=${{ secrets.MYSQL_ROOT_PASSWORD }}" >> variables.pkr.hcl
-        echo "SQL_USER=${{ secrets.SQL_USER }}" >> variables.pkr.hcl
-        echo "SQL_PSWD=${{ secrets.SQL_PSWD }}" >> variables.pkr.hcl
-        echo "AUTH_USER=${{ secrets.AUTH_USER }}" >> variables.pkr.hcl
-        echo "AUTH_PSWD=${{ secrets.AUTH_PSWD }}" >> variables.pkr.hcl
-
-    - name: Display variables.pkr.hcl
-      run: cat variables.pkr.hcl
-
-    - name: Initialize Packer
-      run:  packer init packer/packer_file.pkr.hcl
-
-    - name: Format Packer configuration
-      run:  packer fmt packer/packer_file.pkr.hcl
-
-    - name: Validate Packer configuration
-      run:  packer validate packer/packer_file.pkr.hcl
-
     - name: Run Packer Build
-      run: packer build -var-file=variables.pkr.hcl packer/packer_file.pkr.hcl
+      run: packer build packer/packer_file.pkr.hcl

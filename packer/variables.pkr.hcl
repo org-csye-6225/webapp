@@ -1,20 +1,24 @@
-# variables.pkr.hcl
 variable "MYSQL_ROOT_PASSWORD" {
- description = "MYSQL_ROOT_PASSWORD"
+  description = "MySQL root password"
+  default     = ""
 }
 
 variable "SQL_USER" {
-  description = "The user variable"
+  description = "MySQL SQL user"
+  default     = ""
 }
 
 variable "SQL_PSWD" {
-  description = "The password variable"
+  description = "MySQL SQL password"
+  default     = ""
 }
 
 variable "AUTH_USER" {
-  description = "The authentication user variable"
+  description = "Authentication user"
+  default     = ""
 }
 
 variable "AUTH_PSWD" {
-  description = "The authentication password variable"
+  description = "Authentication password"
+  default     = ""
 }
