@@ -1,5 +1,5 @@
 # WEBAPP
-## Installation
+## Install
 
 1. Clone the repository:
 
