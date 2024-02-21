@@ -1,4 +1,4 @@
-name: Node.js CI
+name: Packer setup
 
 on:
   pull_request:
@@ -18,16 +18,10 @@ jobs:
       with:
         node-version: '20'
     
-    - name: Install Packer
-      run: |
-          wget https://releases.hashicorp.com/packer/1.7.5/packer_1.7.5_linux_amd64.zip
-          unzip packer_1.7.5_linux_amd64.zip
-          sudo mv packer /usr/local/bin/
-      if: success()
     
     - name: Format Packer template
-      run: packer fmt packer/webapp/packer/packer_file.pkr.hcl
+      run: packer fmt packer/packer_file.pkr.hcl
 
     - name: Validate Packer template
-      run: packer validate -syntax-only  packer/webapp/packer/packer_file.pkr.hcl
+      run: packer validate -syntax-only  packer/packer_file.pkr.hcl
 
