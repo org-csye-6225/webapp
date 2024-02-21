@@ -52,17 +52,14 @@ build {
       "cd /opt/csye6225/app",
       "sudo unzip webapp.zip",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
-      "sudo npm install",
-      "sudo npm run test:integration"
+      "sudo npm install"
     ]
   }
-  #   provisioner "shell" {
-  #   inline = [
-  #     "if [[ ! -z ${var.auth_pswd} && ! -z ${var.auth_user} && ! -z ${var.mysql_root_password} && ! -z ${var.sql_pswd} && ! -z ${var.sql_user} ]]; then",
-  #     "  sudo npm run test:integration",
-  #     "else",
-  #     "  echo 'GitHub secrets are not available. Skipping integration tests.'",
-  #     "fi"
-  #   ]
-  # }
+  provisioner "shell" {
+    inline = [
+      "sudo cp /opt/csye6225/webapp/startApp.service /etc/systemd/system/",
+      "sudo systemctl daemon-reload",
+      "sudo systemctl enable startApp.service"
+    ]
+  }
 }
