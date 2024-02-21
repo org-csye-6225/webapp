@@ -1,3 +1,43 @@
  packer fmt . 
  packer validate .
  packer build packer_file.pkr.hcl
+
+
+ IN GITHUB ACTIONS: packer build -var 'auth_pswd=your_password' -var 'auth_user=your_user' -var 'mysql_root_password=your_password' -var 'sql_pswd=your_password' -var 'sql_user=your_user' packer_file.pkr.hcl
+
+
+github actions workflow
+
+ name: Build Packer Image
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v2
+      
+    - name: Set up Packer
+      uses: hashicorp/setup-packer@v1
+      
+    - name: Build Packer Image
+      env:
+        AUTH_PSWD: ${{ secrets.AUTH_PSWD }}
+        AUTH_USER: ${{ secrets.AUTH_USER }}
+        MYSQL_ROOT_PASSWORD: ${{ secrets.MYSQL_ROOT_PASSWORD }}
+        SQL_PSWD: ${{ secrets.SQL_PSWD }}
+        SQL_USER: ${{ secrets.SQL_USER }}
+      run: |
+        packer build \
+          -var 'auth_pswd=$AUTH_PSWD' \
+          -var 'auth_user=$AUTH_USER' \
+          -var 'mysql_root_password=$MYSQL_ROOT_PASSWORD' \
+          -var 'sql_pswd=$SQL_PSWD' \
+          -var 'sql_user=$SQL_USER' \
+          your-packer-file.pkr.hcl
