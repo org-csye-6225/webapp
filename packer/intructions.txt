@@ -1,0 +1,3 @@
+ packer fmt . 
+ packer validate .
+ packer build packer_file.pkr.hcl
