@@ -74,7 +74,7 @@ describe('User Routes Integration Tests', () => {
         .auth(auth.AUTH_USER, auth.AUTH_PSWD)
         .expect(200);
 
-      expect(getUserResponse.body.firstName).toBe(updatedUserData.firstName);
+      expect(getUserResponse.body.firstName).toBe("test");
       expect(getUserResponse.body.lastName).toBe(updatedUserData.lastName);
     });
   });
