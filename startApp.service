@@ -4,10 +4,7 @@ After=network.target
  
 [Service]
 Environment=HOST=localhost
-Environment=DATABASE=healthDB
-Environment=DIALECT=mysql
 Type=simple
-User=csye6225
 WorkingDirectory=/opt/csye6225/webapp/
 ExecStart=/usr/bin/node /opt/csye6225/webapp/app.js
 Restart=always
@@ -15,7 +12,6 @@ RestartSec=5
 StandardOutput=syslog
 StandardError=syslog
 SyslogIdentifier=webapp
- 
  
 [Install]
 WantedBy=multi-user.target
