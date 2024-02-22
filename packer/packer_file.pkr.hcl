@@ -60,11 +60,11 @@ build {
   provisioner "shell" {
     inline = [
 
-      "sudo cp /opt/csye6225/webapp/startApp.service /etc/systemd/system/",
+      "sudo cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
       "sudo systemctl daemon-reload",
-      "sudo systemctl start webapp",
-      "sudo systemctl enable webapp",
-      "sudo systemctl status webapp"
+      "sudo systemctl start webapp.service",
+      "sudo systemctl enable webapp.service",
+      "sudo systemctl status webapp.service"
     ]
   }
 }
