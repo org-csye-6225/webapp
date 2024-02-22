@@ -23,6 +23,7 @@ build {
     "source.googlecompute.centOS_mySQL"
   ]
 
+
   provisioner "shell" {
     inline = [
     "sudo dnf update -y",
