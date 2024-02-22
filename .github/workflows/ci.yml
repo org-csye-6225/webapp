@@ -26,22 +26,3 @@ jobs:
 
     - name: Install dependencies
       run: npm install
-
-    - name: Create webapp zip artifact
-      run: zip -r /tmp/webapp.zip .
-
-    - name: Upload repository artifact
-      uses: actions/upload-artifact@v2
-      with:
-        name: webapp-artifact
-        path: /tmp/webapp.zip
-        
-    - name: Initialize Packer
-      run:  packer init packer/packer_file.pkr.hcl
-
-    - name: Format Packer configuration
-      run:  packer fmt packer/packer_file.pkr.hcl
-
-    - name: Validate Packer configuration
-      run:  packer validate packer/packer_file.pkr.hcl
-    

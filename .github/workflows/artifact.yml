@@ -49,6 +49,9 @@ jobs:
           service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
+    - name: 'Use gcloud CLI'
+      run: 'gcloud info'
+
     - name: Initialize Packer
       run:  packer init packer/packer_file.pkr.hcl
     
@@ -58,8 +61,5 @@ jobs:
     - name: Validate Packer configuration
       run:  packer validate packer/packer_file.pkr.hcl
           
-    - name: 'Use gcloud CLI'
-      run: 'gcloud info'
-
     - name: Run Packer Build
       run: packer build packer/packer_file.pkr.hcl
