@@ -16,10 +16,10 @@ jobs:
 
     - name: Create .sh file with zip artifact
       run: |
-        echo "export USER=${{ secrets.SQL_USER }}" >> envSetup.sh
+        echo "export SQL_USER=${{ secrets.SQL_USER }}" >> envSetup.sh
         echo "export TESTUSER=${{ secrets.SQL_USER }}" >> envSetup.sh
         echo "export DATABASE=${{ secrets.DATABASE }}" >> envSetup.sh
-        echo "export PASSWORD=${{ secrets.SQL_PSWD}}" >> envSetup.sh
+        echo "export SQL_PSWD=${{ secrets.SQL_PSWD }}" >> envSetup.sh
         echo "export HOST=127.0.0.1" >> envSetup.sh
         echo "export DIALECT=mysql" >> envSetup.sh
         echo "export AUTH_USER=${{ secrets.AUTH_USER }}" >> envSetup.sh

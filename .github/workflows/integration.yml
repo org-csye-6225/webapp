@@ -55,11 +55,11 @@ jobs:
 
       - name: Run tests
         env:
-          PASSWORD: "${{ secrets.SQL_PSWD }}"
+          SQL_PSWD: "${{ secrets.SQL_PSWD }}"
           AUTH_USER: "${{ secrets.AUTH_USER }}"
           AUTH_PSWD: "${{ secrets.AUTH_PSWD }}"
           DATABASE: "healthDB"
           DIALECT: "mysql"
-          USER : "root"
+          SQL_USER : "root"
           HOST: 127.0.0.1
         run: npm run test:integration  
