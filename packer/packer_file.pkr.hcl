@@ -53,14 +53,18 @@ build {
       "cd /opt/csye6225/webapp",
       "sudo unzip webapp.zip",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
-      "sudo npm install"
+      "sudo npm install",
+      "sudo bash envSetup.sh"
     ]
   }
   provisioner "shell" {
     inline = [
+
       "sudo cp /opt/csye6225/webapp/startApp.service /etc/systemd/system/",
       "sudo systemctl daemon-reload",
-      "sudo systemctl enable startApp.service"
+      "sudo systemctl start webapp",
+      "sudo systemctl enable webapp",
+      "sudo systemctl status webapp"
     ]
   }
 }

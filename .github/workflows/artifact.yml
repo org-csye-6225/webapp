@@ -14,16 +14,16 @@ jobs:
     - name: Checkout webapp
       uses: actions/checkout@v2
 
-    - name: Create .env file with zip artifact
+    - name: Create .sh file with zip artifact
       run: |
-        echo "USER= ${{ secrets.SQL_USER }}" >> .env
-        echo "DATABASE=${{ secrets.DATABASE }}" >> .env
-        echo "PASSWORD=${{ secrets.SQL_PSWD}}" >> .env
-        echo "HOST=127.0.0.1" >> .env
-        echo "DIALECT=mysql" >> .env
-        echo "AUTH_USER=${{ secrets.AUTH_USER }}" >> .env
-        echo "AUTH_PSWD=${{ secrets.AUTH_PSWD }}" >> .env
-        zip -r /tmp/webapp.zip .env .
+        echo "export USER= ${{ secrets.SQL_USER }}" >> envSetup.sh
+        echo "export DATABASE=${{ secrets.DATABASE }}" >> envSetup.sh
+        echo "export PASSWORD=${{ secrets.SQL_PSWD}}" >> envSetup.sh
+        echo "export HOST=127.0.0.1" >> envSetup.sh
+        echo "export DIALECT=mysql" >> envSetup.sh
+        echo "export AUTH_USER=${{ secrets.AUTH_USER }}" >> envSetup.sh
+        echo "export AUTH_PSWD=${{ secrets.AUTH_PSWD }}" >> envSetup.sh
+        zip -r /tmp/webapp.zip envSetup.sh .
 
     - name: Upload repository artifact
       uses: actions/upload-artifact@v2
