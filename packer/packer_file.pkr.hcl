@@ -52,16 +52,19 @@ build {
       "sudo cp /tmp/webapp.zip /opt/csye6225/webapp/",
       "cd /opt/csye6225/webapp",
       "sudo unzip webapp.zip",
+      "echo 'Unzipping done'",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
-      "cd /opt/csye6225/webapp",
-      "sudo chmod +x envSetup.sh",
-      "sudo chmod +x start_webapp.sh",
-      ". ./envSetup.sh",
+      "echo 'npm install starts'",
       "sudo npm install"
     ]
   }
   provisioner "shell" {
     inline = [
+      "cd /opt/csye6225/webapp",
+      "echo 'making envSetup and start_webapp.sh executable'",
+      "sudo chmod +x envSetup.sh",
+      "sudo chmod +x start_webapp.sh",
+      "echo 'copying service file'",
       "sudo cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
       "cd /etc/systemd/system",
       "sudo systemctl daemon-reload",
