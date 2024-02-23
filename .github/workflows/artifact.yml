@@ -29,7 +29,7 @@ jobs:
         echo "source ./envSetup.sh" >> start_webapp.sh
         echo "npm start" >> start_webapp.sh
 
-        zip -r /tmp/webapp.zip envSetup.sh start_webapp.sh
+        zip -r /tmp/webapp.zip envSetup.sh start_webapp.sh .
 
     - name: Upload repository artifact
       uses: actions/upload-artifact@v2
