@@ -4,6 +4,12 @@ After=network.target
  
 [Service]
 Environment=HOST=localhost
+Environment=SQL_USER=root                             
+Environment=DATABASE=healthDB
+Environment=SQL_PSWD=Data@1234        
+Environment=DIALECT=mysql      
+Environment=AUTH_USER=danny@gmail.com
+Environment=AUTH_PSWD=1234@Data
 Type=simple
 WorkingDirectory=/opt/csye6225/webapp/
 ExecStart=/usr/bin/node /opt/csye6225/webapp/app.js
