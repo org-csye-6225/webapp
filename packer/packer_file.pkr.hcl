@@ -54,7 +54,8 @@ build {
       "sudo unzip webapp.zip",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
       "cd /opt/csye6225/webapp",
-      "sudo chmod -x envSetup.sh",
+      "sudo chmod +x envSetup.sh",
+      "sudo chmod +x start_webapp.sh",
       ". ./envSetup.sh",
       "sudo npm install"
     ]
