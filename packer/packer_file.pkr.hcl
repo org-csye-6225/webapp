@@ -56,8 +56,7 @@ build {
       "cd /opt/csye6225/webapp",
       "sudo chmod -x envSetup.sh",
       ". ./envSetup.sh",
-      "sudo npm install",
-      "mysqladmin -u root password root"
+      "sudo npm install"
     ]
   }
   provisioner "shell" {
