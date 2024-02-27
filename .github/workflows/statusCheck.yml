@@ -41,7 +41,7 @@ jobs:
     - name: Run Packer fmt
       id: fmt
       run: |
-          packer fmt -check .
+          packer fmt -check packer/packer_file.pkr.hcl
           echo "::set-output name=fmt-changes::$(git diff --name-only)"
  
     - name: Fail if fmt changes
