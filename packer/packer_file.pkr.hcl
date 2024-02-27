@@ -7,7 +7,7 @@ packer {
   }
 }
 
-source "googlecompute" "centOS_mySQL" {
+soure "googlecompute" "centOS_mySQL" {
   project_id     = "dev-csye6225-415015"
   source_image_family   = "centos-stream-8"
   image_name            = "custom-image-with-mysql"
@@ -24,7 +24,7 @@ build {
   ]
 
 
-  provisioner "shell" {
+  provisi "shell" {
     inline = [
     "sudo dnf update -y",
     "sudo dnf install -y mysql-server",
