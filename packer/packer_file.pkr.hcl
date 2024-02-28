@@ -54,13 +54,12 @@ build {
       "echo 'Unzipping done'",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
       "echo 'npm install starts'",
-      "sudo npm install"
+      "sudo npm install",
+      "sudo touch /opt/csye6225/webapp/.env"
     ]
   }
   provisioner "shell" {
     inline = [
-      "cd /opt/csye6225/webapp",
-      "echo 'making envSetup and start_webapp.sh executable'",
       "echo 'copying service file'",
       "sudo cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
       "cd /etc/systemd/system",
