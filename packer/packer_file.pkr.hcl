@@ -63,7 +63,6 @@ build {
       "echo 'copying service file'",
       "sudo cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
       "cd /etc/systemd/system",
-      "mysqladmin -u root password root",
       "sudo systemctl daemon-reload",
       "sudo systemctl start webapp.service",
       "sudo systemctl enable webapp.service",
