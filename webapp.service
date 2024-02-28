@@ -3,7 +3,6 @@ Description=webapp
 After=network.target
  
 [Service]
-Environment=HOST=localhost
 Type=simple
 User=root
 Group=root
