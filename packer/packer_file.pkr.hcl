@@ -48,7 +48,6 @@ build {
       "sudo useradd -r -s /usr/sbin/nologin -g csye6225 csye6225",
       "sudo mkdir -p /opt/csye6225/webapp",
       "sudo chown -R csye6225:csye6225 /opt/csye6225",
-      "sudo chmod -R 755 /opt/csye6225/webapp",
       "sudo cp /tmp/webapp.zip /opt/csye6225/webapp/",
       "cd /opt/csye6225/webapp",
       "sudo unzip webapp.zip",
@@ -62,8 +61,6 @@ build {
     inline = [
       "cd /opt/csye6225/webapp",
       "echo 'making envSetup and start_webapp.sh executable'",
-      "sudo chmod +x envSetup.sh",
-      "sudo chmod +x start_webapp.sh",
       "echo 'copying service file'",
       "sudo cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
       "cd /etc/systemd/system",
@@ -71,7 +68,8 @@ build {
       "sudo systemctl daemon-reload",
       "sudo systemctl start webapp.service",
       "sudo systemctl enable webapp.service",
-      "sudo systemctl status webapp.service"
+      "sudo systemctl status webapp.service",
+      "sudo chmod -R 750 /opt/csye6225/webapp",
     ]
   }
 }
