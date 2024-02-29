@@ -66,8 +66,7 @@ build {
       "sudo systemctl daemon-reload",
       "sudo systemctl start webapp.service",
       "sudo systemctl enable webapp.service",
-      "sudo systemctl status webapp.service",
-      "sudo chmod -R 750 /opt/csye6225/webapp",
+      "sudo systemctl status webapp.service"
     ]
   }
 }
