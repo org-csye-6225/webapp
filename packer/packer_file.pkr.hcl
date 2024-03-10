@@ -25,16 +25,16 @@ build {
 
   provisioner "shell" {
     inline = [
-    "sudo dnf update -y",
-    "sudo dnf install -y mysql-server",
-    "sudo systemctl enable mysqld",
-    "sudo systemctl start mysqld",
-    "sudo dnf install unzip -y",
-    "sudo dnf install -y gcc-c++ make",
-    "curl -sL https://rpm.nodesource.com/setup_20.x | sudo bash -",
-    "sudo dnf install nodejs -y",
-    "sudo mysql -e 'CREATE DATABASE healthDB;'",
-    "sudo mysql -e 'USE healthDB;'"
+      "sudo dnf update -y",
+      "sudo dnf install -y mysql-server",
+      "sudo systemctl enable mysqld",
+      "sudo systemctl start mysqld",
+      "sudo dnf install unzip -y",
+      "sudo dnf install -y gcc-c++ make",
+      "curl -sL https://rpm.nodesource.com/setup_20.x | sudo bash -",
+      "sudo dnf install nodejs -y",
+      "sudo mysql -e 'CREATE DATABASE healthDB;'",
+      "sudo mysql -e 'USE healthDB;'"
     ]
   }
   provisioner "file" {

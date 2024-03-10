@@ -15,14 +15,14 @@ const userService = {
       if (!email || !password || !firstName || !lastName) {
         return res.status(400)
             .header(commonHeaders)
-            .send('All fields are required');
+            .json({ error: 'All fields are required' });
       }
 
       const existingUser = await User.findOne({where: {email}});
       if (existingUser) {
-        return res.status(400)
+        return res.status(409)
             .header(commonHeaders)
-            .send('User with this email already exists');
+            .json({ error: 'User with this email already exists' });
       }
 
       const newUser = await User.create({
@@ -38,7 +38,7 @@ const userService = {
     } catch (error) {
       return res.status(500)
           .header(commonHeaders)
-          .send(error.message);
+          .json({ error: error.message });
     }
   },
 
@@ -47,6 +47,12 @@ const userService = {
       const userEmail = req.authenticatedUser.email;
       const updatedUserData = req.body;
 
+      if (Object.keys(updatedUserData).length === 0) {
+        return res.status(400)
+          .header(commonHeaders)
+          .json({ error: 'Bad Request' });
+      }
+
       const disallowedFields = Object.keys(updatedUserData)
           .filter((field) => !['firstName', 'lastName', 'password']
               .includes(field));
@@ -54,7 +60,7 @@ const userService = {
       if (disallowedFields.length > 0) {
         return res.status(400)
             .header(commonHeaders)
-            .send('Cannot update Data');
+            .json({ error: 'Cannot update Data' });
       }
 
       if (
@@ -64,7 +70,7 @@ const userService = {
       ) {
           return res.status(400)
               .header(commonHeaders)
-              .send('firstName, lastName, or password cannot be empty');
+              .json({ error: 'firstName, lastName, or password cannot be empty' });
       }
 
 
@@ -82,13 +88,13 @@ const userService = {
       allowedUserData.account_updated = new Date();
 
       await User.update(allowedUserData, {where: {email: userEmail}});
-      return res.status(200)
+      return res.status(204)
           .header(commonHeaders)
-          .send('User information updated successfully');
+          .json({ message: 'User information updated successfully' });
     } catch (error) {
       return res.status(500)
           .header(commonHeaders)
-          .send(error.message);
+          .json({ error: error.message });
     }
   },
 
@@ -100,7 +106,7 @@ const userService = {
       if (!user) {
         return res.status(404)
             .header(commonHeaders)
-            .send('User not found');
+            .json({ error: 'User not found' });
       }
 
       return res.status(200)
@@ -109,7 +115,7 @@ const userService = {
     } catch (error) {
       return res.status(500)
           .header(commonHeaders)
-          .send(error.message);
+          .json({ error: error.message });
     }
   },
 };
