@@ -53,8 +53,15 @@ build {
       "echo 'Unzipping done'",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
       "echo 'npm install starts'",
-      "sudo npm install",
-      "sudo touch /opt/csye6225/webapp/.env"
+      "sudo -u csye6225 npm install",
+      "sudo -u csye6225 touch /opt/csye6225/webapp/.env",
+      "sudo chmod 644 /opt/csye6225/webapp/webapp.service",
+      "sudo chmod 750 /opt/csye6225",
+      "sudo chown -R csye6225:csye6225 /opt/csye6225",
+      "sudo chmod 770 /opt/csye6225/webapp",
+      "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
+      "sudo chmod 660 /opt/csye6225/webapp/*",
+      "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp/*"
     ]
   }
   provisioner "shell" {
