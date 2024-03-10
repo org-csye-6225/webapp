@@ -67,7 +67,7 @@ describe('User Routes Integration Tests', () => {
         .put('/v1/user/self')
         .auth(auth.AUTH_USER, auth.AUTH_PSWD)
         .send(updatedUserData)
-        .expect(200);
+        .expect(204);
 
       const getUserResponse = await request(app)
         .get('/v1/user/self')
