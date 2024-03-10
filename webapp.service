@@ -4,8 +4,8 @@ After=network.target
  
 [Service]
 Type=simple
-User=root
-Group=root
+User=csye6225
+Group=csye6225
 WorkingDirectory=/opt/csye6225/webapp/
 ExecStartPre=/bin/bash -c 'while [ ! -f /opt/csye6225/webapp/.env ]; do sleep 1; done'
 ExecStart=/usr/bin/node /opt/csye6225/webapp/app.js
