@@ -45,6 +45,8 @@ build {
     inline = [
       "sudo groupadd csye6225",
       "sudo useradd -r -s /usr/sbin/nologin -g csye6225 csye6225",
+      "sudo mkdir /opt/csye6225",
+      "sudo chown -R csye6225:csye6225 /opt/csye6225",
       "sudo -u csye6225 mkdir -p /opt/csye6225/webapp",
       "sudo chown -R csye6225:csye6225 /opt/csye6225",
       "sudo -u csye6225 cp /tmp/webapp.zip /opt/csye6225/webapp/",
