@@ -45,32 +45,22 @@ build {
     inline = [
       "sudo groupadd csye6225",
       "sudo useradd -r -s /usr/sbin/nologin -g csye6225 csye6225",
-      "sudo mkdir /opt/csye6225",
+      "sudo mkdir -p /opt/csye6225/webapp",
       "sudo chown -R csye6225:csye6225 /opt/csye6225",
-      "sudo -u csye6225 mkdir -p /opt/csye6225/webapp",
-      "sudo chown -R csye6225:csye6225 /opt/csye6225",
-      "sudo -u csye6225 cp /tmp/webapp.zip /opt/csye6225/webapp/",
+      "sudo cp /tmp/webapp.zip /opt/csye6225/webapp/",
       "cd /opt/csye6225/webapp",
-      "sudo -u csye6225 unzip webapp.zip",
+      "sudo unzip webapp.zip",
       "echo 'Unzipping done'",
       "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
       "echo 'npm install starts'",
-      "sudo -u csye6225 npm install",
-      "sudo -u csye6225 touch /opt/csye6225/webapp/.env",
-      "sudo chmod 644 /opt/csye6225/webapp/webapp.service",
-      "sudo chmod 750 /opt/csye6225",
-      "sudo chown -R csye6225:csye6225 /opt/csye6225",
-      "sudo chmod 770 /opt/csye6225/webapp",
-      "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp",
-      "sudo chmod 660 /opt/csye6225/webapp/*",
-      "sudo chown -R csye6225:csye6225 /opt/csye6225/webapp/*"
+      "sudo npm install",
+      "sudo touch /opt/csye6225/webapp/.env"
     ]
   }
   provisioner "shell" {
     inline = [
       "echo 'copying service file'",
-      "sudo -u csye6225 cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
-      "sudo chmod 744 /etc/systemd/system/webapp.service",
+      "sudo cp /opt/csye6225/webapp/webapp.service /etc/systemd/system/",
       "cd /etc/systemd/system",
       "sudo systemctl daemon-reload",
       "sudo systemctl start webapp.service",
