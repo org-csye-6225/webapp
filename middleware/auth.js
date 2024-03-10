@@ -4,6 +4,9 @@ const auth = require('../config/AuthConfig');
 
 const authenticateBasic = (req, res, next) => {
 
+  const user = basicAuth(req);
+  
+  // remove below code
   if (!user) {
     console.log('No user provided');
     // ... handle authentication failure
@@ -16,7 +19,7 @@ const authenticateBasic = (req, res, next) => {
   console.log('Password valid:', isPasswordValid);
 
   //remove above code
-  const user = basicAuth(req);
+
 
   if (!user ||
     !compare(user.name, auth.AUTH_USER) ||
