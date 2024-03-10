@@ -3,6 +3,19 @@ const compare = require('tsscmp');
 const auth = require('../config/AuthConfig');
 
 const authenticateBasic = (req, res, next) => {
+
+  if (!user) {
+    console.log('No user provided');
+    // ... handle authentication failure
+  }
+
+  const isUserNameValid = compare(user.name, auth.AUTH_USER);
+  const isPasswordValid = compare(user.pass, auth.AUTH_PSWD);
+
+  console.log('Username valid:', isUserNameValid);
+  console.log('Password valid:', isPasswordValid);
+
+  //remove above code
   const user = basicAuth(req);
 
   if (!user ||
