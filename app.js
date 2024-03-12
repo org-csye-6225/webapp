@@ -8,7 +8,7 @@ const app = express();
 
 db.initDatabase()
     .then(() => {
-      console.log('Database initialized successfully');
+      console.log('Database initialized successful');
       return db.sequelize.sync();
     })
     .then(() => {
