@@ -1,6 +1,6 @@
 const User = require('../models/User');
 const {commonHeaders} = require('../middleware/routes');
-const logger = require('./logging/logger');
+const logger = require('../logging/logger');
 User.prototype.toJSON = function() {
   const user = {...this.get()};
   delete user.password;

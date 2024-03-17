@@ -3,7 +3,7 @@ const bodyParser = require('body-parser');
 const db = require('./init/index');
 const healthzRoutes = require('./routes/healthzRoutes');
 const userRoutes = require('./routes/userRoutes');
-const logger = require('./logger'); 
+const logger = require('./logging/logger')
 
 const app = express();
 
