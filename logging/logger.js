@@ -2,7 +2,7 @@ const winston = require('winston');
 const fs = require('fs');
 const path = require('path');
 
-const logDirectory = path.join(__dirname, 'logs');
+const logDirectory = "/var/log/webapp";
 
 // Create the log directory if it does not exist
 if (!fs.existsSync(logDirectory)) {

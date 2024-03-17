@@ -68,6 +68,12 @@ build {
     inline = [
       "curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh",
       "sudo bash add-google-cloud-ops-agent-repo.sh --also-install",
+      "sudo mkdir -p /var/log/webapp",
+      "sudo chown -R csye6225:csye6225 /var/log/webapp",
+      "sudo chmod 774 /var/log/webapp",
+      "sudo setfacl -d -m u::rwx /var/log/webapp",
+      "sudo setfacl -d -m g::rwx /var/log/webapp",
+      "sudo setfacl -d -m o::r /var/log/webapp"
     ]
   }
 }
