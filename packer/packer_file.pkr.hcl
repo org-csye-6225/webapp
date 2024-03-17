@@ -64,4 +64,10 @@ build {
       "sudo chmod 700 /opt/csye6225"
     ]
   }
+  provisioner "shell" {
+    inline = [
+      "curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh",
+      "sudo bash add-google-cloud-ops-agent-repo.sh --also-install",
+    ]
+  }
 }

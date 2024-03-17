@@ -1,7 +1,7 @@
 const express = require('express');;
 // eslint-disable-next-line new-cap
 const router = express.Router();
-const logger = require('./logging/logger');
+const logger = require('../logging/logger');
 const {commonHeaders, rejectPayload, checkDBConnection} = require('../middleware/routes');
 
 router.get('/', rejectPayload, checkDBConnection, (req, res) => {
