@@ -3,8 +3,14 @@ const bodyParser = require('body-parser');
 const db = require('./init/index');
 const healthzRoutes = require('./routes/healthzRoutes');
 const userRoutes = require('./routes/userRoutes');
+const logger = require('./logger'); 
 
 const app = express();
+
+app.use((req, res, next) => {
+  logger.info(`${req.method} ${req.url}`);
+  next();
+});
 
 db.initDatabase()
     .then(() => {
@@ -30,5 +36,6 @@ if (!module.parent) {
   const PORT = process.env.PORT || 3000;
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
+    logger.info(`Server started on port ${PORT}`);
   });
 }
