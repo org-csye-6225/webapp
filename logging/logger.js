@@ -2,10 +2,17 @@ const { createLogger, transports, format } = require('winston');
 const { LoggingWinston } = require('@google-cloud/logging-winston');
 
 const loggingWinston = new LoggingWinston();
-
 const path = require('path');
+
+const isGitHubActions = process.env.GITHUB_ACTIONS === 'true';
+
+let logDirectory;
 const pathVal = '../../../../../var/log/webapp/'
-const logDirectory = path.join(__dirname, pathVal);
+if (isGitHubActions) {
+  logDirectory = '/logs';
+} else {
+  logDirectory = path.join(__dirname, pathVal);
+}
 
 const customFormat = format.printf(({ level, message, timestamp, stack }) => {
   let severityLevel;
