@@ -5,16 +5,7 @@ const User = require('../../models/User');
 const auth = require('../../config/AuthConfig');
 
 
-describe('User Routes Integration Tests', () => {
-  jest.mock('winston', () => ({
-    createLogger: jest.fn().mockReturnValue({
-      info: jest.fn(),
-      error: jest.fn(),
-      warn: jest.fn(),
-      debug: jest.fn(),
-    }),
-  }));
-  
+describe('User Routes Integration Tests', () => {  
   beforeAll(async () => {
     await db.initDatabase();
     await db.sequelize.sync();
