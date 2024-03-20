@@ -4,8 +4,8 @@ const { LoggingWinston } = require('@google-cloud/logging-winston');
 const loggingWinston = new LoggingWinston();
 
 const path = require('path');
-
-const logDirectory = path.join(__dirname, '../../../../../var/log/webapp/');
+const pathVal = '/logs'//'../../../../../var/log/webapp/'
+const logDirectory = path.join(__dirname, pathVal);
 
 const customFormat = format.printf(({ level, message, timestamp, stack }) => {
   let severityLevel;
@@ -31,7 +31,7 @@ const customFormat = format.printf(({ level, message, timestamp, stack }) => {
     message,
     ...(stack ? { stack } : {})
   };
-  if (level === 'error') {
+  if (level === 'error' && stack) {
     const errorObject = stack.split('\n')[0];
     const fileLineRegex = /\((.+?):(\d+):(\d+)\)/;
     const match = errorObject.match(fileLineRegex);
