@@ -3,14 +3,9 @@ const { LoggingWinston } = require('@google-cloud/logging-winston');
 
 const loggingWinston = new LoggingWinston();
 
-const fs = require('fs');
 const path = require('path');
 
 const logDirectory = path.join(__dirname, '../../../../../var/log/webapp/');
-
-if (!fs.existsSync(logDirectory)) {
-  fs.mkdirSync(logDirectory);
-}
 
 const customFormat = format.printf(({ level, message, timestamp, stack }) => {
   let severityLevel;
