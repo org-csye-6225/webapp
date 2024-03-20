@@ -83,7 +83,7 @@ build {
 
   provisioner "shell" {
     inline = [
-      "sudo sh -c 'cat <<EOF > /etc/google-cloud-ops-agent/config.yaml'",
+      "sudo tee /tmp/config.yaml > /dev/null << 'EOF'",
       "logging:",
       "  receivers:",
       "    my-app-receiver:",
@@ -106,7 +106,8 @@ build {
       "        default_pipeline:",
       "          receivers: [my-app-receiver]",
       "          processors: [my-app-processor, move_severity]",
-      "EOF'",
+      "EOF",
+      "sudo mv /tmp/config.yaml /etc/google-cloud-ops-agent/config.yaml",
       "sudo systemctl restart google-cloud-ops-agent"
     ]
   }
