@@ -1,5 +1,3 @@
-// logging/logger.js
-
 if (!process.env.GITHUB_ACTIONS) {
   const { createLogger, transports, format } = require('winston');
   const { LoggingWinston } = require('@google-cloud/logging-winston');
@@ -11,7 +9,6 @@ if (!process.env.GITHUB_ACTIONS) {
 
   const logDirectory = path.join(__dirname, '../../../../../var/log/webapp/');
 
-  // Create log directory if it doesn't exist
   if (!fs.existsSync(logDirectory)) {
     fs.mkdirSync(logDirectory);
   }
