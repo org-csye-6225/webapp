@@ -9,6 +9,7 @@ describe('User Routes Integration Tests', () => {
   beforeAll(async () => {
     await db.initDatabase();
     await db.sequelize.sync();
+    await User.destroy({ where: {} });
   });
 
   afterEach(async () => {

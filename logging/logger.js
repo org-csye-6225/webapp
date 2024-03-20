@@ -4,7 +4,7 @@ const { LoggingWinston } = require('@google-cloud/logging-winston');
 const loggingWinston = new LoggingWinston();
 
 const path = require('path');
-const pathVal = '/logs'//'../../../../../var/log/webapp/'
+const pathVal = '../../../../../var/log/webapp/'
 const logDirectory = path.join(__dirname, pathVal);
 
 const customFormat = format.printf(({ level, message, timestamp, stack }) => {
