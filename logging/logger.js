@@ -14,26 +14,9 @@ if (!process.env.GITHUB_ACTIONS) {
   }
 
   const customFormat = format.printf(({ level, message, timestamp, stack }) => {
-    let severityLevel;
-    switch (level) {
-      case 'debug':
-        severityLevel = 'DEBUG';
-        break;
-      case 'info':
-        severityLevel = 'INFO';
-        break;
-      case 'warn':
-        severityLevel = 'WARNING';
-        break;
-      case 'error':
-        severityLevel = 'ERROR';
-        break;
-      default:
-        severityLevel = level.toUpperCase();
-    }
     const logObject = {
       timestamp,
-      severity: severityLevel,
+      level,
       message,
       ...(stack ? { stack } : {})
     };
@@ -54,7 +37,7 @@ if (!process.env.GITHUB_ACTIONS) {
   const logger = createLogger({
     level: 'debug',
     format: format.combine(
-      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+      format.timestamp({ format: () => new Date().toISOString() }),
       format.errors({ stack: true }),
       format.splat(),
       format.json(),
