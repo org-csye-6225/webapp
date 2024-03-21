@@ -14,7 +14,6 @@ if (!process.env.GITHUB_ACTIONS) {
   }
 
   const customFormat = format.printf(({ level, message, timestamp, stack }) => {
-
     const logObject = {
       timestamp,
       level,
@@ -35,32 +34,10 @@ if (!process.env.GITHUB_ACTIONS) {
     return JSON.stringify(logObject);
   });
 
-  function formatTimestampAsRFC3339(dateString) {
-    const parts = dateString.split(' ');
-    const dateParts = parts[0].split('-');
-    const timeParts = parts[1].split(':');
-  
-    const year = parseInt(dateParts[0], 10);
-    const month = parseInt(dateParts[1], 10) - 1;
-    const day = parseInt(dateParts[2], 10);
-    const hour = parseInt(timeParts[0], 10);
-    const minute = parseInt(timeParts[1], 10);
-    const second = parseInt(timeParts[2], 10);
-  
-    const date = new Date(year, month, day, hour, minute, second, 0);
-    const timestamp = date.getTime() * 1000000; 
-  
-    const formattedTimestamp = `${date.getUTCFullYear()}-${String(date.getUTCMonth() + 1).padStart(2, '0')}-${String(date.getUTCDate()).padStart(2, '0')}T${String(date.getUTCHours()).padStart(2, '0')}:${String(date.getUTCMinutes()).padStart(2, '0')}:${String(date.getUTCSeconds()).padStart(2, '0')}.${String(timestamp % 1000000000).padStart(9, '0')}Z`;
-  
-    return formattedTimestamp;
-  }
-
   const logger = createLogger({
     level: 'debug',
     format: format.combine(
-      format.timestamp({
-        format: () => formatTimestampAsRFC3339('YYYY-MM-DD HH:mm:ss'),
-      }),
+      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
       format.errors({ stack: true }),
       format.splat(),
       format.json(),
