@@ -37,7 +37,7 @@ if (!process.env.GITHUB_ACTIONS) {
   const logger = createLogger({
     level: 'debug',
     format: format.combine(
-      format.timestamp({ format: 'YYYY-MM-DD HH:mm:ss' }),
+      format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSSSSSSSZ' }),
       format.errors({ stack: true }),
       format.splat(),
       format.json(),
