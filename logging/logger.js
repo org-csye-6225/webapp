@@ -6,7 +6,7 @@ if (!process.env.GITHUB_ACTIONS) {
 
   const fs = require('fs');
   const path = require('path');
-
+ 
   const logDirectory = path.join(__dirname, '../../../../../var/log/webapp/');
 
   if (!fs.existsSync(logDirectory)) {
@@ -34,10 +34,17 @@ if (!process.env.GITHUB_ACTIONS) {
     return JSON.stringify(logObject);
   });
 
+  function customTimestamp() {
+    const time = new Date();
+    const milliseconds = time.getMilliseconds().toString().padStart(3, '0');
+    const nanoseconds = process.hrtime()[1].toString().padStart(9, '0');
+    return `${time.toISOString().slice(0, -5)}.${milliseconds}${nanoseconds}Z`;
+  }
+
   const logger = createLogger({
     level: 'debug',
     format: format.combine(
-      format.timestamp({ format: 'YYYY-MM-DDTHH:mm:ss.SSSSSSSSSZ' }),
+      format.timestamp({ format: customTimestamp }),
       format.errors({ stack: true }),
       format.splat(),
       format.json(),
