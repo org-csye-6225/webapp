@@ -1,10 +1,19 @@
 const User = require('../models/User');
 const {commonHeaders} = require('../middleware/routes');
 const logger = require('../logging/logger');
+const Authentication = require('../models/Authentication');
+const crypto = require('crypto');
+const jwt = require('jsonwebtoken');
+
 User.prototype.toJSON = function() {
   const user = {...this.get()};
   delete user.password;
   return user;
+};
+
+const generateToken = (userId) => {
+  const secretKey = crypto.randomBytes(16).toString('hex');
+  return jwt.sign({ userId }, secretKey, { expiresIn: '2m' });
 };
 
 const userService = {
@@ -33,10 +42,19 @@ const userService = {
         firstName,
         lastName,
       });
+
+      const token = generateToken(newUser.id);
+
+      await Authentication.create({
+        token,
+        TTL: new Date(Date.now() + 2 * 60 * 1000),
+        userId: newUser.id,
+      });
+
       logger.info(`Created new user: ${newUser.email}`);
       return res.status(201)
           .header(commonHeaders)
-          .json(newUser);
+          .json({ user: newUser});
     } catch (error) {
       logger.error(`Error creating user: ${error.message}`);
       return res.status(500)
@@ -128,6 +146,29 @@ const userService = {
           .json({ error: error.message });
     }
   },
+  verifyUser: async (req, res) => {
+    try {
+      const { token } = req.params;
+      const authenticationRecord = await Authentication.findOne({ where: { token } });
+
+      if (!authenticationRecord) {
+        logger.warn(`Invalid token: ${token}`);
+        return res.status(404).json({ error: 'Invalid token' });
+      }
+      const currentTime = new Date();
+      if (currentTime > authenticationRecord.TTL) {
+        logger.warn(`Token expired: ${token}`);
+        return res.status(400).json({ error: 'Token has expired' });
+      }
+      await User.update({ isVerified: true }, { where: { id: authenticationRecord.userId } });
+
+      logger.info(`User verified successfully: ${authenticationRecord.userId}`);
+      return res.status(200).json({ message: 'User verified successfully' });
+    } catch (error) {
+      logger.error(`Error verifying user: ${error.message}`);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+  }
 };
 
 module.exports = userService;
