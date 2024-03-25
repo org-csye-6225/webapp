@@ -4,7 +4,8 @@ const logger = require('../logging/logger');
 const Authentication = require('../models/Authentication');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
-
+const {PubSub} = require('@google-cloud/pubsub');
+const pubsub = new PubSub();
 User.prototype.toJSON = function() {
   const user = {...this.get()};
   delete user.password;
@@ -14,6 +15,14 @@ User.prototype.toJSON = function() {
 const generateToken = (userId) => {
   const secretKey = crypto.randomBytes(16).toString('hex');
   return jwt.sign({ userId }, secretKey, { expiresIn: '2m' });
+};
+
+const publishUserCreatedEvent = async (email, token) => {
+  const topicName = 'sendEmail';
+  const topic = pubsub.topic(topicName);
+  const data = Buffer.from(JSON.stringify({ email, token }));
+  const messageId = await topic.publishMessage({ data });
+  logger.info(`Published ${topicName} event to Pub/Sub with ID: ${messageId}`);
 };
 
 const userService = {
@@ -50,6 +59,8 @@ const userService = {
         TTL: new Date(Date.now() + 2 * 60 * 1000),
         userId: newUser.id,
       });
+
+      await publishUserCreatedEvent(newUser.email, token);
 
       logger.info(`Created new user: ${newUser.email}`);
       return res.status(201)
