@@ -34,10 +34,12 @@ describe('User Routes Integration Tests', () => {
         .post('/v1/user')
         .send(userData)
         .expect(201);
-
+        
+      const email = userData.email;
+      await User.update({ isVerified: true }, { where: { email } });
       const getUserResponse = await request(app) 
         .get('/v1/user/self')
-        .auth("TEST@test.com", "passWord")
+        .auth(userData.email, userData.password)
         .expect(200);
 
       expect(getUserResponse.body.email).toBe(userData.email);
@@ -49,17 +51,19 @@ describe('User Routes Integration Tests', () => {
   describe('Test 2: Update User and validate data with GET', () => {
     test('should update user and validate data with GET', async () => {
       const userData = {
-        email: auth.AUTH_USER,
-        password: auth.AUTH_PSWD,
-        firstName: 'daniel',
-        lastName: 'radclif',
-        isVerified: true
+        email: "test2@test.com",
+        password: "pswd12",
+        firstName: 'danny',
+        lastName: 'radclif'
       };
       
       await request(app)
         .post('/v1/user')
         .send(userData)
         .expect(201);
+
+      const email = userData.email;
+      await User.update({ isVerified: true }, { where: { email } });
 
       const updatedUserData = {
         firstName: 'abhinav',
@@ -68,13 +72,13 @@ describe('User Routes Integration Tests', () => {
 
       await request(app)
         .put('/v1/user/self')
-        .auth(auth.AUTH_USER, auth.AUTH_PSWD)
+        .auth(userData.email, userData.password)
         .send(updatedUserData)
         .expect(204);
 
       const getUserResponse = await request(app)
         .get('/v1/user/self')
-        .auth(auth.AUTH_USER, auth.AUTH_PSWD)
+        .auth(userData.email, userData.password)
         .expect(200);
 
       expect(getUserResponse.body.firstName).toBe(updatedUserData.firstName);
