@@ -1,11 +1,11 @@
 const User = require('../models/User');
 const {commonHeaders} = require('../middleware/routes');
-const logger = require('../logging/logger');
+const logger = require('../logging/logger');  
 const Authentication = require('../models/Authentication');
 const crypto = require('crypto');
 const jwt = require('jsonwebtoken');
 const {PubSub} = require('@google-cloud/pubsub');
-const pubsub = new PubSub();
+
 User.prototype.toJSON = function() {
   const user = {...this.get()};
   delete user.password;
@@ -18,6 +18,10 @@ const generateToken = (userId) => {
 };
 
 const publishUserCreatedEvent = async (email, token) => {
+  const pubsub = new PubSub({
+    projectId: 'tf-project-csye-6225',
+    keyFilename: '/Users/abhinav/Documents/NEU_CLASSES/NEU_SEM_2/Cloud_Computing/tf-project-csye-6225-1d5b76d3592f.json'
+});
   const topicName = 'sendEmail';
   const topic = pubsub.topic(topicName);
   const data = Buffer.from(JSON.stringify({ email, token }));
@@ -28,7 +32,7 @@ const publishUserCreatedEvent = async (email, token) => {
 const userService = {
   createUser: async (req, res) => {
     try {
-      const {email, password, firstName, lastName} = req.body;
+      const {email, password, firstName, lastName, isVerified} = req.body;
 
       if (!email || !password || !firstName || !lastName) {
         logger.warn('Missing required fields for user creation');
@@ -50,6 +54,7 @@ const userService = {
         password,
         firstName,
         lastName,
+        isVerified
       });
 
       const token = generateToken(newUser.id);
