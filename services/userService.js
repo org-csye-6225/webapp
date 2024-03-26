@@ -6,7 +6,7 @@ const crypto = require('crypto');
 const {PubSub} = require('@google-cloud/pubsub');
 const pubsub = new PubSub({
   projectId: 'tf-project-csye-6225',
-  keyFilename: '../cred/gcp_sa_key.json'
+  keyFilename: './cred/gcp_sa_key.json'
 });
 
 User.prototype.toJSON = function() {
