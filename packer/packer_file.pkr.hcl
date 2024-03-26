@@ -10,7 +10,7 @@ packer {
 source "googlecompute" "centOS_mySQL" {
   project_id            = "tf-project-csye-6225"
   source_image_family   = "centos-stream-8"
-  image_name            = "custom-image-with-mysql-{{timestamp}}"
+  image_name            = "custom-image-with-logger-{{timestamp}}"
   image_family          = "custom-images"
   zone                  = "europe-central2-a"
   ssh_username          = "packer"
