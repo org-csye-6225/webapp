@@ -8,12 +8,13 @@ const User = db.sequelize.define('user', {
     defaultValue: Sequelize.UUIDV4,
     primaryKey: true,
   },
-  email: {type: Sequelize.STRING, unique: true, allowNull: false},
+  email: {type: Sequelize.STRING, allowNull: false},
   password: {type: Sequelize.STRING, allowNull: false},
   firstName: {type: Sequelize.STRING, allowNull: false},
   lastName: {type: Sequelize.STRING, allowNull: false},
+  isVerified: {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false},
 });
-
+  
 // encrypt the password, before user is created
 User.beforeCreate(async (user) => {
   const hashedPassword = await bcrypt.hash(user.password, 10);
