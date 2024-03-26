@@ -3,7 +3,6 @@ const {commonHeaders} = require('../middleware/routes');
 const logger = require('../logging/logger');  
 const Authentication = require('../models/Authentication');
 const crypto = require('crypto');
-const jwt = require('jsonwebtoken');
 const {PubSub} = require('@google-cloud/pubsub');
 
 User.prototype.toJSON = function() {
@@ -12,9 +11,8 @@ User.prototype.toJSON = function() {
   return user;
 };
 
-const generateToken = (userId) => {
-  const secretKey = crypto.randomBytes(16).toString('hex');
-  return jwt.sign({ userId }, secretKey, { expiresIn: '2m' });
+const generateToken = () => {
+  return crypto.randomBytes(16).toString('hex');
 };
 
 const publishUserCreatedEvent = async (email, token) => {
@@ -32,7 +30,7 @@ const publishUserCreatedEvent = async (email, token) => {
 const userService = {
   createUser: async (req, res) => {
     try {
-      const {email, password, firstName, lastName, isVerified} = req.body;
+      const {email, password, firstName, lastName} = req.body;
 
       if (!email || !password || !firstName || !lastName) {
         logger.warn('Missing required fields for user creation');
@@ -53,11 +51,10 @@ const userService = {
         email,
         password,
         firstName,
-        lastName,
-        isVerified
+        lastName
       });
 
-      const token = generateToken(newUser.id);
+      const token = generateToken();
 
       await Authentication.create({
         token,
