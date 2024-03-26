@@ -4,6 +4,10 @@ const logger = require('../logging/logger');
 const Authentication = require('../models/Authentication');
 const crypto = require('crypto');
 const {PubSub} = require('@google-cloud/pubsub');
+const pubsub = new PubSub({
+  projectId: 'tf-project-csye-6225',
+  keyFilename: '../cred/gcp_sa_key.json'
+});
 
 User.prototype.toJSON = function() {
   const user = {...this.get()};
@@ -16,10 +20,6 @@ const generateToken = () => {
 };
 
 const publishUserCreatedEvent = async (email, token) => {
-  const pubsub = new PubSub({
-    projectId: 'tf-project-csye-6225',
-    keyFilename: '/Users/abhinav/Documents/NEU_CLASSES/NEU_SEM_2/Cloud_Computing/tf-project-csye-6225-1d5b76d3592f.json'
-});
   const topicName = 'sendEmail';
   const topic = pubsub.topic(topicName);
   const data = Buffer.from(JSON.stringify({ email, token }));
