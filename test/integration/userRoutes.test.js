@@ -23,10 +23,11 @@ describe('User Routes Integration Tests', () => {
   describe('Test 1: Create User and validate with GET', () => {
     test('should create a new user and validate data with GET', async () => {
       const userData = {
-        email: auth.AUTH_USER,
-        password: auth.AUTH_PSWD,
+        email: "TEST@test.com",
+        password: "passWord",
         firstName: 'daniel',
-        lastName: 'radclif'
+        lastName: 'radclif',
+        isVerified: true
       };
 
       await request(app)
@@ -36,7 +37,7 @@ describe('User Routes Integration Tests', () => {
 
       const getUserResponse = await request(app) 
         .get('/v1/user/self')
-        .auth(auth.AUTH_USER, auth.AUTH_PSWD)
+        .auth("TEST@test.com", "passWord")
         .expect(200);
 
       expect(getUserResponse.body.email).toBe(userData.email);
@@ -51,7 +52,8 @@ describe('User Routes Integration Tests', () => {
         email: auth.AUTH_USER,
         password: auth.AUTH_PSWD,
         firstName: 'daniel',
-        lastName: 'radclif'
+        lastName: 'radclif',
+        isVerified: true
       };
       
       await request(app)
