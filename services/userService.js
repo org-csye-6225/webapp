@@ -5,7 +5,7 @@ const Authentication = require('../models/Authentication');
 const crypto = require('crypto');
 const {PubSub} = require('@google-cloud/pubsub');
 const pubsub = new PubSub({
-  projectId: 'dev-csye6225-415015',
+  projectId: 'tf-csye-6225-project',
   keyFilename: './cred/gcp_sa_key.json'
 });
 
