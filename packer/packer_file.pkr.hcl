@@ -8,13 +8,13 @@ packer {
 }
 
 source "googlecompute" "centOS_mySQL" {
-  project_id            = "tf-project-csye-6225"
+  project_id            = "dev-csye6225-415015"
   source_image_family   = "centos-stream-8"
   image_name            = "custom-image-with-pubsub-{{timestamp}}"
   image_family          = "custom-images"
   zone                  = "europe-central2-a"
   ssh_username          = "packer"
-  service_account_email = "csye6225-service-for-packer@tf-project-csye-6225.iam.gserviceaccount.com"
+  service_account_email = "dev-service@dev-csye6225-415015.iam.gserviceaccount.com"
   scopes                = ["https://www.googleapis.com/auth/cloud-platform"]
 }
 

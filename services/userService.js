@@ -5,8 +5,8 @@ const Authentication = require('../models/Authentication');
 const crypto = require('crypto');
 const {PubSub} = require('@google-cloud/pubsub');
 const pubsub = new PubSub({
-  projectId: 'tf-project-csye-6225',
-  keyFilename: '/Users/abhinav/Documents/NEU_CLASSES/NEU_SEM_2/Cloud_Computing/tf-project-csye-6225-1d5b76d3592f.json'
+  projectId: 'dev-csye6225-415015',
+  keyFilename: './cred/gcp_sa_key.json'
 });
 
 User.prototype.toJSON = function() {
@@ -20,13 +20,15 @@ const generateToken = () => {
 };
 
 const publishUserCreatedEvent = async (email, token) => {
-  logger.info(`publishUserCreatedEvent called`);
   const topicName = 'sendEmail';
-  const topic = pubsub.topic(topicName);
   const data = Buffer.from(JSON.stringify({ email, token }));
-  logger.info(`just before await topic.publishMessage({ data })`);
-  const messageId = await topic.publishMessage({ data });
+  const databuffer = Buffer.from(data);
+  try{
+  const messageId = await pubsub.topic(topicName).publish(databuffer);
   logger.info(`Published ${topicName} event to Pub/Sub with ID: ${messageId}`);
+  }catch(error){
+    logger.error(`error pubsub`, error);
+  }
 };
 
 const userService = {
@@ -66,7 +68,6 @@ const userService = {
 
       await publishUserCreatedEvent(newUser.email, token);
 
-      logger.info(`Created new user: ${newUser.email}`);
       return res.status(201)
           .header(commonHeaders)
           .json({ user: newUser});
