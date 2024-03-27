@@ -11,11 +11,6 @@ const Authentication = db.sequelize.define('authentication', {
     primaryKey: true,
   },
   token: { type: Sequelize.STRING, allowNull: false },
-  TTL: { 
-    type: Sequelize.DATE, 
-    allowNull: false,
-    defaultValue: () => new Date(Date.now() + TWO_MINUTES_IN_MS)
-  },
   createdAt: { type: Sequelize.DATE, defaultValue: Sequelize.NOW },
 });
 
