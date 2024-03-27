@@ -13,6 +13,7 @@ const User = db.sequelize.define('user', {
   firstName: {type: Sequelize.STRING, allowNull: false},
   lastName: {type: Sequelize.STRING, allowNull: false},
   isVerified: {type: Sequelize.BOOLEAN, allowNull: false, defaultValue: false},
+  emailSentAt: {type: Sequelize.DATE},
 });
   
 // encrypt the password, before user is created

@@ -19,7 +19,7 @@ const generateToken = () => {
 };
 
 const publishUserCreatedEvent = async (email, token) => {
-  const topicName = 'sendEmail';
+  const topicName = 'email-pub-sub';
   const data = Buffer.from(JSON.stringify({ email, token }));
   const databuffer = Buffer.from(data);
   try{
@@ -61,7 +61,6 @@ const userService = {
 
       await Authentication.create({
         token,
-        TTL: new Date(Date.now() + 2 * 60 * 1000),
         userId: newUser.id,
       });
 
@@ -164,19 +163,30 @@ const userService = {
   verifyUser: async (req, res) => {
     try {
       const { token } = req.params;
-      const authenticationRecord = await Authentication.findOne({ where: { token } });
-
+      const authenticationRecord = await Authentication.findOne({ where: { token }, include: [{ model: User }] });
+  
       if (!authenticationRecord) {
         logger.warn(`Invalid token: ${token}`);
         return res.status(404).json({ error: 'Invalid token' });
       }
+  
       const currentTime = new Date();
-      if (currentTime > authenticationRecord.TTL) {
+      const emailSentTime = authenticationRecord.user.emailSentAt;
+
+      if(!emailSentTime){
+        logger.warn(`email did not publish time`);
+        return res.status(400).json({ error: 'Email Time not Available' });
+      }
+      const timeDifference = currentTime.getTime() - emailSentTime.getTime();
+      const timeDifferenceInMinutes = timeDifference / (1000 * 60);
+  
+      if (timeDifferenceInMinutes > 2) {
         logger.warn(`Token expired: ${token}`);
         return res.status(400).json({ error: 'Token has expired' });
       }
+  
       await User.update({ isVerified: true }, { where: { id: authenticationRecord.userId } });
-
+  
       logger.info(`User verified successfully: ${authenticationRecord.userId}`);
       return res.status(200).json({ message: 'User verified successfully' });
     } catch (error) {
@@ -184,6 +194,6 @@ const userService = {
       return res.status(500).json({ error: 'Internal server error' });
     }
   }
-};
+  };
 
 module.exports = userService;

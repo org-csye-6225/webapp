@@ -26,7 +26,7 @@ const createDatabaseIfNotExist = async () => {
 
 const bootstrapDatabase = async () => {
   try {
-    await sequelize.sync();
+    await sequelize.sync({alter:true});
     console.log('Database bootstrapped successfully');
   } catch (error) {
     console.error('Error bootstrapping database:', error);
