@@ -14,12 +14,11 @@ const sequelize = new Sequelize(
 );
 
 const createDatabaseIfNotExist = async () => {
-  const databse = await sequelize.query(`SHOW DATABASES`);
   try {
     await sequelize.query(`CREATE DATABASE IF NOT EXISTS ${dbConfig.DATABASE}`);
     console.log('Database created or already exists');
   } catch (error) {
-    console.error('Error creating database:',databse, error);
+    console.error('Error creating database:', error);
     process.exit(1);
   }
 };
@@ -35,8 +34,13 @@ const bootstrapDatabase = async () => {
 };
 
 const initDatabase = async () => {
-  await createDatabaseIfNotExist();
-  await bootstrapDatabase();
+  try {
+    await createDatabaseIfNotExist();
+    await bootstrapDatabase();
+  } catch (error) {
+    console.error('Error initializing database:', error);
+    process.exit(1);
+  }
 };
 
 const db = {};
