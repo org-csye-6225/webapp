@@ -1,8 +1,6 @@
 const User = require('../models/User');
 const {commonHeaders} = require('../middleware/routes');
 const logger = require('../logging/logger');  
-const Authentication = require('../models/Authentication');
-const crypto = require('crypto');
 const {PubSub} = require('@google-cloud/pubsub');
 const pubsub = new PubSub({
   projectId: 'tf-csye-6225-project'
@@ -12,10 +10,6 @@ User.prototype.toJSON = function() {
   const user = {...this.get()};
   delete user.password;
   return user;
-};
-
-const generateToken = () => {
-  return crypto.randomBytes(16).toString('hex');
 };
 
 const publishUserCreatedEvent = async (email, token) => {
@@ -57,14 +51,7 @@ const userService = {
         lastName
       });
 
-      const token = generateToken();
-
-      await Authentication.create({
-        token,
-        userId: newUser.id,
-      });
-
-      await publishUserCreatedEvent(newUser.email, token);
+      await publishUserCreatedEvent(newUser.email, newUser.id);
 
       return res.status(201)
           .header(commonHeaders)
@@ -163,15 +150,15 @@ const userService = {
   verifyUser: async (req, res) => {
     try {
       const { token } = req.params;
-      const authenticationRecord = await Authentication.findOne({ where: { token }, include: [{ model: User }] });
+      const user = await User.findOne({ where: { id:token } });
   
-      if (!authenticationRecord) {
+      if (!user) {
         logger.warn(`Invalid token: ${token}`);
         return res.status(404).json({ error: 'Invalid token' });
       }
   
       const currentTime = new Date();
-      const emailSentTime = authenticationRecord.user.emailSentAt;
+      const emailSentTime = user.emailSentAt;
 
       if(!emailSentTime){
         logger.warn(`email did not publish time`);
@@ -185,9 +172,9 @@ const userService = {
         return res.status(400).json({ error: 'Token has expired' });
       }
   
-      await User.update({ isVerified: true }, { where: { id: authenticationRecord.userId } });
+      await User.update({ isVerified: true }, { where: { id:token } });
   
-      logger.info(`User verified successfully: ${authenticationRecord.userId}`);
+      logger.info(`User verified successfully with token: ${token}`);
       return res.status(200).json({ message: 'User verified successfully' });
     } catch (error) {
       logger.error(`Error verifying user: ${error.message}`);
