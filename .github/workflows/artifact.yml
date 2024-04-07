@@ -1,8 +1,7 @@
-name: Build Custom Image
+name: Build Custom Image & Setup latest Instance
 
 on:
-  workflow_dispatch:
-  push:
+  pull_request:
     branches:
         - main
 
@@ -42,7 +41,6 @@ jobs:
       with:
           version: '>= 363.0.0'
           project_id: ${{ secrets.GCP_PROJECT_ID }}
-          service_account_email: ${{ secrets.GCP_SA_EMAIL }}
           service_account_key: ${{ secrets.GCP_SA_KEY }}
 
     - name: 'Use gcloud CLI'
@@ -57,5 +55,106 @@ jobs:
     - name: Validate Packer configuration
       run:  packer validate packer/packer_file.pkr.hcl
           
-    - name: Run Packer Build
-      run: packer build packer/packer_file.pkr.hcl
+    # - name: Run Packer Build
+    #   run: packer build packer/packer_file.pkr.hcl
+
+    - name: Get latest machine image ID
+      id: latest_image
+      run: |
+        image_id=$(gcloud compute images list --filter="name~'custom-image-with-pubsub-'" --sort-by=~creationTimestamp --format="value(name)" --limit=1)
+        echo "::set-output name=image_id::$image_id"
+        
+    - name: Create startup script
+      run: |
+        echo '#!/bin/bash' > startup-script.sh
+        echo 'cat <<EOF >> /opt/csye6225/webapp/.env' >> startup-script.sh
+        echo "DATABASE=${{ secrets.DB_NAME }}" >> startup-script.sh
+        echo "SQL_USER=${{ secrets.SQL_USER }}" >> startup-script.sh
+        echo "SQL_PSWD=${{ secrets.SQL_PSWD }}" >> startup-script.sh
+        echo "HOST=${{ secrets.DB_HOST }}" >> startup-script.sh
+        echo 'EOF' >> startup-script.sh
+        echo 'chown csye6225:csye6225 /opt/csye6225/webapp/.env' >> startup-script.sh
+        echo '' >> startup-script.sh
+        echo '# Create or update config.yaml' >> startup-script.sh
+        echo 'cat <<EOF > /etc/google-cloud-ops-agent/config.yaml' >> startup-script.sh
+        echo 'logging:' >> startup-script.sh
+        echo ' receivers:' >> startup-script.sh
+        echo '   my-app-receiver:' >> startup-script.sh
+        echo '     type: files' >> startup-script.sh
+        echo '     include_paths:' >> startup-script.sh
+        echo '       - /var/log/webapp/combined.log' >> startup-script.sh
+        echo '     record_log_file_path: true' >> startup-script.sh
+        echo ' processors:' >> startup-script.sh
+        echo '   my-app-processor:' >> startup-script.sh
+        echo '     type: parse_json' >> startup-script.sh
+        echo '     time_key: time' >> startup-script.sh
+        echo '     time_format: "%Y-%m-%dT%H:%M:%S.%fZ"' >> startup-script.sh
+        echo '   move_severity:' >> startup-script.sh
+        echo '     type: modify_fields' >> startup-script.sh
+        echo '     fields:' >> startup-script.sh
+        echo '       severity:' >> startup-script.sh
+        echo '         move_from: jsonPayload.level' >> startup-script.sh
+        echo '         map_values:' >> startup-script.sh
+        echo '           INFO: "info"' >> startup-script.sh
+        echo '           ERROR: "error"' >> startup-script.sh
+        echo '           WARNING: "warn"' >> startup-script.sh
+        echo '           DEBUG: "debug"' >> startup-script.sh
+        echo ' service:' >> startup-script.sh
+        echo '   pipelines:' >> startup-script.sh
+        echo '     default_pipeline:' >> startup-script.sh
+        echo '       receivers: [my-app-receiver]' >> startup-script.sh
+        echo '       processors: [my-app-processor, move_severity]' >> startup-script.sh
+        echo 'EOF' >> startup-script.sh
+        echo '' >> startup-script.sh
+
+      
+    - name: Set permissions for startup-script.sh
+      run: chmod +x startup-script.sh
+
+    - name: Create new Instance Template
+      run: |
+        gcloud compute instance-templates create "my-instance-template-8-${{ steps.latest_image.outputs.image_id }}" \
+          --machine-type="e2-standard-2" \
+          --region="us-east1" \
+          --instance-template-region="us-east1" \
+          --image="${{ steps.latest_image.outputs.image_id }}" \
+          --subnet="$(gcloud compute networks subnets list --filter="name=webapp" --format="value(selfLink)")" \
+          --service-account="$(gcloud iam service-accounts list --filter='name~new-service-account' --format='value(email)')" \
+          --scopes="https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/pubsub" \
+          --boot-disk-type=pd-balanced \
+          --boot-disk-size=100GB \
+          --metadata-from-file="startup-script=startup-script.sh"
+    
+    - name: Update Managed Instance Group
+      run: |
+        gcloud compute instance-groups managed set-instance-template "my-instance-group" \
+          --region="${{ secrets.GCP_REGION }}" \
+          --template="projects/${{ secrets.GCP_PROJECT_ID }}/regions/${{ secrets.GCP_REGION }}/instanceTemplates/my-instance-template-8-${{ steps.latest_image.outputs.image_id }}" \
+          
+    - name: Recreate Instances
+      run: |
+        instance_names=$(gcloud compute instance-groups managed list-instances "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(NAME)")
+        gcloud compute instance-groups managed recreate-instances "my-instance-group" --instances="$instance_names" --region="${{ secrets.GCP_REGION }}"
+        
+    - name: Wait for Instance Group Refresh
+      run: |
+        expected_instances=$(gcloud compute instance-groups managed describe "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(targetSize)")
+        status="UPDATING"
+        while [ "$status" == "UPDATING" ]; do
+          running_instances=$(gcloud compute instance-groups managed list-instances "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(STATUS)" | grep -c "RUNNING")
+          if [ "$running_instances" -eq "$expected_instances" ]; then
+            status="RUNNING"
+          else
+            status="UPDATING"
+          fi
+          echo "Instance Group Status: $status ($running_instances out of $expected_instances instances running)"
+          sleep 10
+        done
+
+        if [ "$status" == "RUNNING" ]; then
+          echo "Instance Group Refresh Complete"
+          exit 0
+        else
+          echo "Instance Group Refresh Failed"
+          exit 1
+        fi
