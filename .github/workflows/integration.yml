@@ -56,8 +56,6 @@ jobs:
       - name: Run tests
         env:
           SQL_PSWD: "${{ secrets.SQL_PSWD }}"
-          AUTH_USER: "${{ secrets.AUTH_USER }}"
-          AUTH_PSWD: "${{ secrets.AUTH_PSWD }}"
           DATABASE: "healthDB"
           DIALECT: "mysql"
           SQL_USER : "root"
