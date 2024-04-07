@@ -2,7 +2,6 @@ const request = require('supertest');
 const app = require('../../app');
 const db = require('../../init/index');
 const User = require('../../models/User');
-const auth = require('../../config/AuthConfig');
 
 
 describe('User Routes Integration Tests', () => {  

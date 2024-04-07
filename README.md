@@ -29,8 +29,6 @@ export DATABASE=$DATABASE
 export PASSWORD=$PASSWORD
 export HOST=127.0.0.1
 export DIALECT=mysql
-export AUTH_USER=$AUTH_USER
-export AUTH_PSWD=$AUTH_PSWD
 ```
 
 ## Usage
