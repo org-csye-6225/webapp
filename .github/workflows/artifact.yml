@@ -66,12 +66,14 @@ jobs:
         
     - name: Create startup script
       run: |
+        SQL_PSWD=$(gcloud secrets versions access latest --secret=mysql_pswd)
+        DB_HOST=$(gcloud secrets versions access latest --secret=mysql_host_ip)
         echo '#!/bin/bash' > startup-script.sh
         echo 'cat <<EOF >> /opt/csye6225/webapp/.env' >> startup-script.sh
         echo "DATABASE=${{ secrets.DB_NAME }}" >> startup-script.sh
         echo "SQL_USER=${{ secrets.SQL_USER }}" >> startup-script.sh
-        echo "SQL_PSWD=${{ secrets.SQL_PSWD }}" >> startup-script.sh
-        echo "HOST=${{ secrets.DB_HOST }}" >> startup-script.sh
+        echo "SQL_PSWD=$SQL_PSWD" >> startup-script.sh
+        echo "HOST=$DB_HOST" >> startup-script.sh
         echo 'EOF' >> startup-script.sh
         echo 'chown csye6225:csye6225 /opt/csye6225/webapp/.env' >> startup-script.sh
         echo '' >> startup-script.sh
@@ -113,6 +115,7 @@ jobs:
 
     - name: Create new Instance Template
       run: |
+        key_ring_name=$(gcloud kms keyrings list --location ${{ secrets.GCP_REGION }} --format="value(name)" | sort -r | head -n 1)
         gcloud compute instance-templates create "my-instance-template-8-${{ steps.latest_image.outputs.image_id }}" \
           --machine-type="e2-standard-2" \
           --region="us-east1" \
@@ -123,38 +126,35 @@ jobs:
           --scopes="https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/pubsub" \
           --boot-disk-type=pd-balanced \
           --boot-disk-size=100GB \
+          --boot-disk-kms-key="$key_ring_name/cryptoKeys/vm-encryption-key" \
           --metadata-from-file="startup-script=startup-script.sh"
     
     - name: Update Managed Instance Group
       run: |
         gcloud compute instance-groups managed set-instance-template "my-instance-group" \
           --region="${{ secrets.GCP_REGION }}" \
-          --template="projects/${{ secrets.GCP_PROJECT_ID }}/regions/${{ secrets.GCP_REGION }}/instanceTemplates/my-instance-template-8-${{ steps.latest_image.outputs.image_id }}" \
+          --template="projects/${{ secrets.GCP_PROJECT_ID }}/regions/${{ secrets.GCP_REGION }}/instanceTemplates/my-instance-template-8-${{ steps.latest_image.outputs.image_id }}"
           
     - name: Recreate Instances
       run: |
-        instance_names=$(gcloud compute instance-groups managed list-instances "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(NAME)")
-        gcloud compute instance-groups managed recreate-instances "my-instance-group" --instances="$instance_names" --region="${{ secrets.GCP_REGION }}"
+        gcloud compute instance-groups managed rolling-action start-update "my-instance-group" \
+          --region="${{ secrets.GCP_REGION }}" \
+          --version="template=projects/${{ secrets.GCP_PROJECT_ID }}/regions/${{ secrets.GCP_REGION }}/instanceTemplates/my-instance-template-8-${{ steps.latest_image.outputs.image_id }}"
         
     - name: Wait for Instance Group Refresh
       run: |
-        expected_instances=$(gcloud compute instance-groups managed describe "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(targetSize)")
-        status="UPDATING"
-        while [ "$status" == "UPDATING" ]; do
-          running_instances=$(gcloud compute instance-groups managed list-instances "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(STATUS)" | grep -c "RUNNING")
-          if [ "$running_instances" -eq "$expected_instances" ]; then
-            status="RUNNING"
-          else
-            status="UPDATING"
-          fi
-          echo "Instance Group Status: $status ($running_instances out of $expected_instances instances running)"
-          sleep 10
-        done
+          expected_instances=$(gcloud compute instance-groups managed describe "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(targetSize)")
 
-        if [ "$status" == "RUNNING" ]; then
-          echo "Instance Group Refresh Complete"
-          exit 0
-        else
-          echo "Instance Group Refresh Failed"
-          exit 1
-        fi
+          gcloud compute instance-groups managed wait-until "my-instance-group" \
+            --region="${{ secrets.GCP_REGION }}" \
+            --version-target-reached \
+            --format="value(status.versionTarget.isReached,status.isStable)"
+
+          status=$(gcloud compute instance-groups managed describe "my-instance-group" --region="${{ secrets.GCP_REGION }}" --format="value(status)")
+          if [ "$?" -eq 0 ]; then
+            echo "Instance Group Refresh Complete (Expected: $expected_instances instances, Current Status: $status)"
+            exit 0
+          else
+            echo "Instance Group Refresh Failed (Expected: $expected_instances instances, Current Status: $status)"
+            exit 1
+          fi
