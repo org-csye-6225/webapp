@@ -59,7 +59,7 @@ jobs:
     - name: Run Packer Build
       run: packer build packer/packer_file.pkr.hcl
 
-    - name: Get latest machine image ID
+    - name: Get latest machine image
       id: latest_image
       run: |
         image_id=$(gcloud compute images list --filter="name~'custom-image-with-pubsub-'" --sort-by=~creationTimestamp --format="value(name)" --limit=1)
@@ -127,7 +127,7 @@ jobs:
           --scopes="https://www.googleapis.com/auth/cloud-platform","https://www.googleapis.com/auth/pubsub" \
           --boot-disk-type=pd-balanced \
           --boot-disk-size=100GB \
-          --boot-disk-kms-key="$key_ring_name/cryptoKeys/vm-encryption-key" \
+          --boot-disk-kms-key="$key_ring_name/cryptoKeys/vm-disk-encryption-key" \
           --metadata-from-file="startup-script=startup-script.sh"
     
     - name: Update Managed Instance Group

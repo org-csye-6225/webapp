@@ -10,6 +10,6 @@ const authenticateBasic = require('../middleware/auth');
 router.get('/self', rejectPayload, authenticateBasic, checkDBConnection, userService.getUser);
 router.put('/self', authenticateBasic, checkDBConnection, userService.updateUser);
 router.post('/', checkDBConnection, userService.createUser);
-router.get('/verify/:token', userService.verifyUser);
+//router.get('/verify/:token', userService.verifyUser);
 
 module.exports = router;
