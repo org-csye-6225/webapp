@@ -3,6 +3,7 @@ const bodyParser = require('body-parser');
 const db = require('./init/index');
 const healthzRoutes = require('./routes/healthzRoutes');
 const userRoutes = require('./routes/userRoutes');
+const verify = require('./routes/verifyRoutes')
 const logger = require('./logging/logger')
 
 const app = express();
@@ -29,6 +30,7 @@ app.use(bodyParser.json());
 
 app.use('/healthz', healthzRoutes);
 app.use('/v2/user', userRoutes);
+app.use('/user', verify);
 
 module.exports = app;
 
