@@ -28,7 +28,7 @@ db.initDatabase()
 app.use(bodyParser.json());
 
 app.use('/healthz', healthzRoutes);
-app.use('/v1/user', userRoutes);
+app.use('/v2/user', userRoutes);
 
 module.exports = app;
 

@@ -30,14 +30,14 @@ describe('User Routes Integration Tests', () => {
       };
 
       await request(app)
-        .post('/v1/user')
+        .post('/v2/user')
         .send(userData)
         .expect(201);
         
       const email = userData.email;
       await User.update({ isVerified: true }, { where: { email } });
       const getUserResponse = await request(app) 
-        .get('/v1/user/self')
+        .get('/v2/user/self')
         .auth(userData.email, userData.password)
         .expect(200);
 
@@ -57,7 +57,7 @@ describe('User Routes Integration Tests', () => {
       };
       
       await request(app)
-        .post('/v1/user')
+        .post('/v2/user')
         .send(userData)
         .expect(201);
 
@@ -70,13 +70,13 @@ describe('User Routes Integration Tests', () => {
       };
 
       await request(app)
-        .put('/v1/user/self')
+        .put('/v2/user/self')
         .auth(userData.email, userData.password)
         .send(updatedUserData)
         .expect(204);
 
       const getUserResponse = await request(app)
-        .get('/v1/user/self')
+        .get('/v2/user/self')
         .auth(userData.email, userData.password)
         .expect(200);
 
